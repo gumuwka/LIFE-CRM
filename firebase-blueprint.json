@@ -1,0 +1,59 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "The main user document containing all application state.",
+      "type": "object",
+      "properties": {
+        "profile": {
+          "type": "object",
+          "description": "User profile information"
+        },
+        "tasks": {
+          "type": "array",
+          "description": "List of user tasks"
+        },
+        "healthLogs": {
+          "type": "array",
+          "description": "List of health logs"
+        },
+        "financeGoals": {
+          "type": "array",
+          "description": "List of finance goals"
+        },
+        "notes": {
+          "type": "array",
+          "description": "List of notes"
+        },
+        "reports": {
+          "type": "array",
+          "description": "List of reports"
+        },
+        "routineItems": {
+          "type": "array",
+          "description": "List of routine items"
+        },
+        "routineCompletion": {
+          "type": "object",
+          "description": "Status of routine completion"
+        },
+        "streak": {
+          "type": "object",
+          "description": "User activity streak information"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["profile", "tasks", "streak"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User-specific data"
+    }
+  }
+}

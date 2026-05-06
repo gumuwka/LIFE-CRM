@@ -1,0 +1,6 @@
+{
+  "name": "Personal Growth CRM",
+  "description": "Profesjonalny system zarządzania życiem, zdrowiem i finansami, zaprojektowany dla maksymalnej produktywności i przejrzystości.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Life Management", "Financial Tracking", "Health Monitoring"]
+}

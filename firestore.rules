@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // 2. Validation Blueprints (The "Anti-Update-Gap")
+    function isValidUser(data) {
+      return data.keys().hasAll(['profile', 'tasks', 'streak'])
+        && data.profile is map
+        && data.tasks is list
+        && data.tasks.size() <= 200
+        && data.streak is map;
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) 
+        && isValidId(userId)
+        && isValidUser(incoming())
+        && incoming().updatedAt == request.time;
+      allow update: if isOwner(userId)
+        && isValidUser(incoming())
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasAny(['profile', 'tasks', 'healthLogs', 'financeGoals', 'notes', 'reports', 'routineItems', 'routineCompletion', 'streak', 'updatedAt']);
+      allow delete: if false; // Users cannot delete their profiles via client
+    }
+  }
+}
